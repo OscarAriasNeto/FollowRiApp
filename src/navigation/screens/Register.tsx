@@ -94,8 +94,31 @@ export default function Register() {
         <TouchableOpacity
           style={[styles.button, !termsAccepted && styles.buttonDisabled]}
           disabled={!termsAccepted}
-          onPress={() => {
-            /* TODO: handle register */
+          onPress={async () => {
+            if (!termsAccepted) {
+              alert("Você deve aceitar os termos para continuar.");
+              return;
+            }
+            try {
+              const response = await fetch("https://localhost:7181/Person", {
+                method: "POST",
+                headers: {
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ email, fullName, cpf, password }),
+              });
+              if (!response.ok) {
+                throw new Error("Register failed");
+              }
+              const data = await response.json();
+              console.log("Register success:", data);
+              alert("Cadastro realizado com sucesso! Faça login.");
+              // Navigate to login screen after successful register
+              navigation.navigate("Login");
+            } catch (error) {
+              console.error("Register error:", error);
+              alert("Erro ao cadastrar. Tente novamente.");
+            }
           }}
         >
           <Text style={styles.buttonText}>Cadastrar</Text>

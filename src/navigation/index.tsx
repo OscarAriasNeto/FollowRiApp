@@ -6,11 +6,49 @@ import {
   StaticParamList,
 } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+
 import Login from "./screens/Login";
 import Register from "./screens/Register";
 import Splash from "./screens/Splash";
 import { NotFound } from "./screens/NotFound";
 import ForgotPassword from "./screens/ForgotPassword";
+
+import RequestScreen from "./screens/RequestScreen";
+import GpsScreen from "./screens/GpsScreen";
+import ProfileScreen from "./screens/ProfileScreen";
+
+const Tab = createBottomTabNavigator();
+
+function MainTabs() {
+  return (
+    <Tab.Navigator
+      screenOptions={({ route }) => ({
+        tabBarActiveTintColor: "#0a6eff",
+        tabBarInactiveTintColor: "gray",
+        tabBarStyle: { backgroundColor: "#0a6eff" },
+        headerShown: false,
+        tabBarIcon: ({ color, size }) => {
+          let iconName = "ellipse";
+
+          if (route.name === "Request") {
+            iconName = "document-text-outline";
+          } else if (route.name === "Gps") {
+            iconName = "location-outline";
+          } else if (route.name === "Profile") {
+            iconName = "person-outline";
+          }
+
+          return <Ionicons name={iconName} size={size} color={color} />;
+        },
+      })}
+    >
+      <Tab.Screen name="Request" component={RequestScreen} options={{ title: "" }} />
+      <Tab.Screen name="Gps" component={GpsScreen} options={{ title: "" }} />
+      <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: "Perfil" }} />
+    </Tab.Navigator>
+  );
+}
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -59,6 +97,13 @@ const RootStack = createNativeStackNavigator({
           </TouchableOpacity>
         ),
       }),
+    },
+
+    MainTabs: {
+      screen: MainTabs,
+      options: {
+        headerShown: false,
+      },
     },
 
     NotFound: {

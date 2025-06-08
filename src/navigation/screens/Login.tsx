@@ -60,8 +60,26 @@ export default function Login() {
       </TouchableOpacity>
       <TouchableOpacity
         style={styles.button}
-        onPress={() => {
-          /* TODO: handle login */
+        onPress={async () => {
+          try {
+            const response = await fetch("https://localhost:7181/Person", {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify({ email, password }),
+            });
+            if (!response.ok) {
+              throw new Error("Login failed");
+            }
+            const data = await response.json();
+            console.log("Login success:", data);
+            // Navigate to MainTabs or home screen after login
+            navigation.navigate("MainTabs");
+          } catch (error) {
+            console.error("Login error:", error);
+            alert("Erro ao fazer login. Verifique suas credenciais.");
+          }
         }}
       >
         <Text style={styles.buttonText}>Logar</Text>
