@@ -13,10 +13,35 @@ import Ionicons from "react-native-vector-icons/Ionicons";
 
 export default function Login() {
   const navigation = useNavigation();
-
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
+
+  const handleLogin = async () => {
+    try {
+      const response = await fetch("http://192.168.X.X:7181/api/person/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ email, password }),
+      });
+
+      const text = await response.text();
+      console.log("Raw response:", text);
+
+      if (!response.ok) {
+        throw new Error("Login failed");
+      }
+
+      const data = JSON.parse(text);
+      console.log("Login success:", data);
+      navigation.navigate("MainTabs");
+    } catch (error) {
+      console.error("Login error:", error);
+      alert("Erro ao fazer login. Verifique suas credenciais ou conexão.");
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -33,6 +58,7 @@ export default function Login() {
         value={email}
         onChangeText={setEmail}
       />
+
       <Text style={styles.label}>Senha</Text>
       <View style={styles.passwordContainer}>
         <TextInput
@@ -55,35 +81,15 @@ export default function Login() {
           />
         </TouchableOpacity>
       </View>
+
       <TouchableOpacity onPress={() => navigation.navigate("ForgotPassword")}>
         <Text style={styles.forgotText}>Esqueceu sua senha?</Text>
       </TouchableOpacity>
-      <TouchableOpacity
-        style={styles.button}
-        onPress={async () => {
-          try {
-            const response = await fetch("https://localhost:7181/Person", {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify({ email, password }),
-            });
-            if (!response.ok) {
-              throw new Error("Login failed");
-            }
-            const data = await response.json();
-            console.log("Login success:", data);
-            // Navigate to MainTabs or home screen after login
-            navigation.navigate("MainTabs");
-          } catch (error) {
-            console.error("Login error:", error);
-            alert("Erro ao fazer login. Verifique suas credenciais.");
-          }
-        }}
-      >
+
+      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <Text style={styles.buttonText}>Logar</Text>
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => navigation.navigate("Register")}>
         <Text style={styles.registerText}>Não tem uma conta? Crie uma</Text>
       </TouchableOpacity>
