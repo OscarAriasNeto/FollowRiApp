@@ -1,3 +1,9 @@
+Oscar Arias Neto
+Nicolas Souza dos Santos
+Julia martis Rebelles
+# Youtube
+https://youtu.be/1wrVvfBli3k
+
 # Aplicativo de Alerta de Enchentes ️
 
 ## Descrição
