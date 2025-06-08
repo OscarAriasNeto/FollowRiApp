@@ -1,5 +1,15 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  KeyboardAvoidingView,
+  Platform,
+  ScrollView,
+} from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function RequestScreen() {
   const [address, setAddress] = useState("");
@@ -8,25 +18,25 @@ export default function RequestScreen() {
 
   const handleSolicitar = async () => {
     try {
-      const response = await fetch("https://localhost:7181/RiverAddress", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ address, cep, report }),
-      });
-      if (!response.ok) {
-        throw new Error("Request failed");
+      if (!address || !cep || !report) {
+        alert("Preencha todos os campos.");
+        return;
       }
-      const data = await response.json();
-      console.log("Request success:", data);
-      alert("Solicitação enviada com sucesso!");
+
+      const newRequest = { address, cep, report, createdAt: new Date().toISOString() };
+      const existing = await AsyncStorage.getItem("requests");
+      const requests = existing ? JSON.parse(existing) : [];
+
+      requests.push(newRequest);
+      await AsyncStorage.setItem("requests", JSON.stringify(requests));
+
+      alert("Solicitação salva localmente!");
       setAddress("");
       setCep("");
       setReport("");
     } catch (error) {
       console.error("Request error:", error);
-      alert("Erro ao enviar solicitação. Tente novamente.");
+      alert("Erro ao salvar solicitação.");
     }
   };
 

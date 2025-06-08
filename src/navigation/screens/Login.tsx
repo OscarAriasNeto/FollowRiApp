@@ -10,6 +10,7 @@ import {
   View,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Login() {
   const navigation = useNavigation();
@@ -19,27 +20,18 @@ export default function Login() {
 
   const handleLogin = async () => {
     try {
-      const response = await fetch("http://192.168.X.X:7181/api/person/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, password }),
-      });
-
-      const text = await response.text();
-      console.log("Raw response:", text);
-
-      if (!response.ok) {
-        throw new Error("Login failed");
+      if (!email || !password) {
+        alert("Preencha email e senha.");
+        return;
       }
 
-      const data = JSON.parse(text);
-      console.log("Login success:", data);
+      // Simulando sucesso de login
+      await AsyncStorage.setItem("user", JSON.stringify({ email }));
+
       navigation.navigate("MainTabs");
     } catch (error) {
       console.error("Login error:", error);
-      alert("Erro ao fazer login. Verifique suas credenciais ou conexão.");
+      alert("Erro ao fazer login local.");
     }
   };
 

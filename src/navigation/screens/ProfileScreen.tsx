@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from "react";
-import { View, Text, TextInput, StyleSheet, TouchableOpacity, ScrollView, Alert } from "react-native";
+import {
+  View,
+  Text,
+  TextInput,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  Alert,
+} from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function ProfileScreen() {
   const [email, setEmail] = useState("");
@@ -15,24 +24,18 @@ export default function ProfileScreen() {
   const togglePasswordEdit = () => setShowPasswordEdit(!showPasswordEdit);
 
   useEffect(() => {
-    // Fetch profile data on mount
     const fetchProfile = async () => {
       setLoading(true);
       try {
-        const response = await fetch("https://localhost:7181/Person", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
-        if (!response.ok) {
-          throw new Error("Failed to fetch profile");
+        const user = await AsyncStorage.getItem("registeredUser");
+        if (user) {
+          const data = JSON.parse(user);
+          setEmail(data.email || "");
+          setFullName(data.fullName || "");
+          setCpf(data.cpf || "");
+        } else {
+          Alert.alert("Erro", "Nenhum dado de usuário encontrado.");
         }
-        const data = await response.json();
-        setEmail(data.email || "");
-        setFullName(data.fullName || "");
-        setCpf(data.cpf || "");
-        // Password is not fetched for security reasons
       } catch (error) {
         Alert.alert("Erro", "Não foi possível carregar os dados do perfil.");
       } finally {
@@ -45,16 +48,9 @@ export default function ProfileScreen() {
   const handleSave = async () => {
     setLoading(true);
     try {
-      const response = await fetch("https://localhost:7181/Person", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ email, fullName, cpf, password }),
-      });
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
+      const updatedUser = { email, fullName, cpf, password };
+      await AsyncStorage.setItem("registeredUser", JSON.stringify(updatedUser));
+
       Alert.alert("Sucesso", "Perfil atualizado com sucesso.");
       setShowEmailEdit(false);
       setShowPasswordEdit(false);

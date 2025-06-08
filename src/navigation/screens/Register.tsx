@@ -11,6 +11,7 @@ import {
   View,
 } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 export default function Register() {
   const navigation = useNavigation();
@@ -21,6 +22,29 @@ export default function Register() {
   const [password, setPassword] = useState("");
   const [passwordVisible, setPasswordVisible] = useState(false);
   const [termsAccepted, setTermsAccepted] = useState(false);
+
+  const handleRegister = async () => {
+    if (!termsAccepted) {
+      alert("Você deve aceitar os termos para continuar.");
+      return;
+    }
+
+    try {
+      if (!email || !fullName || !cpf || !password) {
+        alert("Preencha todos os campos.");
+        return;
+      }
+
+      const user = { email, fullName, cpf, password };
+      await AsyncStorage.setItem("registeredUser", JSON.stringify(user));
+
+      alert("Cadastro realizado com sucesso! Faça login.");
+      navigation.navigate("Login");
+    } catch (error) {
+      console.error("Register error:", error);
+      alert("Erro ao cadastrar localmente.");
+    }
+  };
 
   return (
     <KeyboardAvoidingView
@@ -94,32 +118,7 @@ export default function Register() {
         <TouchableOpacity
           style={[styles.button, !termsAccepted && styles.buttonDisabled]}
           disabled={!termsAccepted}
-          onPress={async () => {
-            if (!termsAccepted) {
-              alert("Você deve aceitar os termos para continuar.");
-              return;
-            }
-            try {
-              const response = await fetch("https://localhost:7181/Person", {
-                method: "POST",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ email, fullName, cpf, password }),
-              });
-              if (!response.ok) {
-                throw new Error("Register failed");
-              }
-              const data = await response.json();
-              console.log("Register success:", data);
-              alert("Cadastro realizado com sucesso! Faça login.");
-              // Navigate to login screen after successful register
-              navigation.navigate("Login");
-            } catch (error) {
-              console.error("Register error:", error);
-              alert("Erro ao cadastrar. Tente novamente.");
-            }
-          }}
+          onPress={handleRegister}
         >
           <Text style={styles.buttonText}>Cadastrar</Text>
         </TouchableOpacity>
