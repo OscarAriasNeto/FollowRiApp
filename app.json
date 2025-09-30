@@ -1,13 +1,13 @@
 {
   "expo": {
-    "name": "mobile_test",
-    "slug": "mobile_test",
+    "name": "Follow Rivers",
+    "slug": "follow-rivers",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
-    "scheme": "mobiletest",
+    "scheme": "followrivers",
     "ios": {
       "supportsTablet": true,
       "bundleIdentifier": "com.satya164.reactnavigationtemplate"
@@ -32,6 +32,9 @@
         }
       ],
       "react-native-edge-to-edge"
-    ]
+    ],
+    "extra": {
+      "apiBaseUrl": "http://localhost:5000"
+    }
   }
 }

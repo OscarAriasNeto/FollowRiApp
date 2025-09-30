@@ -1,22 +1,18 @@
 import React from "react";
-import { TouchableOpacity } from "react-native";
 import Ionicons from "react-native-vector-icons/Ionicons";
-import {
-  createStaticNavigation,
-  StaticParamList,
-} from "@react-navigation/native";
-import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
+import { createNativeStackNavigator } from "@react-navigation/native-stack";
+import { createStaticNavigation, StaticParamList } from "@react-navigation/native";
 
-import Login from "./screens/Login";
-import Register from "./screens/Register";
-import Splash from "./screens/Splash";
-import { NotFound } from "./screens/NotFound";
-import ForgotPassword from "./screens/ForgotPassword";
-
-import RequestScreen from "./screens/RequestScreen";
-import GpsScreen from "./screens/GpsScreen";
-import ProfileScreen from "./screens/ProfileScreen";
+import LoginScreen from "../screens/auth/LoginScreen";
+import RegisterScreen from "../screens/auth/RegisterScreen";
+import ForgotPasswordScreen from "../screens/auth/ForgotPasswordScreen";
+import SplashScreen from "../screens/SplashScreen";
+import AlertsScreen from "../screens/alerts/AlertsScreen";
+import RiverAddressesScreen from "../screens/rivers/RiverAddressesScreen";
+import ProfileScreen from "../screens/profile/ProfileScreen";
+import NotFoundScreen from "../screens/NotFoundScreen";
+import theme from "../theme";
 
 const Tab = createBottomTabNavigator();
 
@@ -24,27 +20,38 @@ function MainTabs() {
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        tabBarActiveTintColor: "#0a6eff",
-        tabBarInactiveTintColor: "gray",
-        tabBarStyle: { backgroundColor: "#0a6eff" },
         headerShown: false,
+        tabBarActiveTintColor: theme.colors.textOnPrimary,
+        tabBarInactiveTintColor: theme.colors.textOnPrimary,
+        tabBarStyle: {
+          backgroundColor: theme.colors.primary,
+          borderTopColor: theme.colors.border,
+        },
         tabBarIcon: ({ color, size }) => {
-          let iconName = "ellipse";
+          let iconName: string = "ellipse-outline";
 
-          if (route.name === "Request") {
-            iconName = "document-text-outline";
-          } else if (route.name === "Gps") {
-            iconName = "location-outline";
+          if (route.name === "Alerts") {
+            iconName = "warning-outline";
+          } else if (route.name === "Rivers") {
+            iconName = "water-outline";
           } else if (route.name === "Profile") {
-            iconName = "person-outline";
+            iconName = "person-circle-outline";
           }
 
           return <Ionicons name={iconName} size={size} color={color} />;
         },
       })}
     >
-      <Tab.Screen name="Request" component={RequestScreen} options={{ title: "" }} />
-      <Tab.Screen name="Gps" component={GpsScreen} options={{ title: "" }} />
+      <Tab.Screen
+        name="Alerts"
+        component={AlertsScreen}
+        options={{ title: "Alertas" }}
+      />
+      <Tab.Screen
+        name="Rivers"
+        component={RiverAddressesScreen}
+        options={{ title: "Pontos de rio" }}
+      />
       <Tab.Screen name="Profile" component={ProfileScreen} options={{ title: "Perfil" }} />
     </Tab.Navigator>
   );
@@ -52,71 +59,49 @@ function MainTabs() {
 
 const RootStack = createNativeStackNavigator({
   screens: {
-    Home: {
-      screen: Splash,
+    Splash: {
+      screen: SplashScreen,
       options: {
-        title: "Splash",
         headerShown: false,
       },
     },
-
     Login: {
-      screen: Login,
-      options: ({ navigation }) => ({
-        title: "Login",
-        headerShown: true,
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        ),
-      }),
+      screen: LoginScreen,
+      options: {
+        title: "Entrar",
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+      },
     },
-
     Register: {
-      screen: Register,
-      options: ({ navigation }) => ({
-        title: "Cadastre-se",
-        headerShown: true,
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        ),
-      }),
+      screen: RegisterScreen,
+      options: {
+        title: "Criar conta",
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+      },
     },
-
     ForgotPassword: {
-      screen: ForgotPassword,
-      options: ({ navigation }) => ({
-        title: "Esqueceu a senha",
-        headerShown: true,
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        ),
-      }),
+      screen: ForgotPasswordScreen,
+      options: {
+        title: "Recuperar senha",
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+      },
     },
-
     MainTabs: {
       screen: MainTabs,
       options: {
         headerShown: false,
       },
     },
-
     NotFound: {
-      screen: NotFound,
-      options: ({ navigation }) => ({
+      screen: NotFoundScreen,
+      options: {
         title: "404",
-        headerShown: true,
-        headerLeft: () => (
-          <TouchableOpacity onPress={() => navigation.goBack()} style={{ marginLeft: 10 }}>
-            <Ionicons name="arrow-back" size={24} color="#000" />
-          </TouchableOpacity>
-        ),
-      }),
+        headerStyle: { backgroundColor: theme.colors.surface },
+        headerTintColor: theme.colors.text,
+      },
       linking: {
         path: "*",
       },
